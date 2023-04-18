@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  tp-so1:
+    container_name: tp-so1
+    build:
+      context: ./
+    working_dir: /usr/src/myapp
