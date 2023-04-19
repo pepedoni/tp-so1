@@ -4,3 +4,7 @@ the [Google Docs][1] with the full assignment.
 
  [1]: https://docs.google.com/document/d/1kxpc6tS2NrmshUJPpY2xp7LXjRkCbPozounOQ5cfCwU/edit#
 
+Executar com:
+./grade.sh
+ou 
+docker-compose up

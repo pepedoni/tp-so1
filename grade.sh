@@ -6,45 +6,44 @@ set -eu
 
 total=22
 ecnt=0
+stop=6
+totalTestsRun=0
+totalCasesRun=0
 
-if ! tests/test0.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
+#Run script until stop
+for (( i=0; i<=$stop; i++ ))
+do
+    
+    if [ $i -le 6 ]
+    then
+        runTimes=1
+    fi 
 
-if ! tests/test1.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
+    if [ $i -eq 7 ] || [ $i -eq 8 ] || [ $i -eq 11 ] || [ $i -eq 12 ]
+    then 
+        runTimes=2
+    fi
 
-if ! tests/test2.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
+    if [ $i -eq 9 ] || [ $i -eq 10 ]
+    then 
+        runTimes=4
+    fi
 
-if ! tests/test3.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
+    for (( j=1; j<=$runTimes; j++ ))
+    do
+        totalCasesRun=$(( $totalCasesRun + 1 )) ;
+        totalTestsRun=$(( $totalTestsRun + 1 )) ;
+        
+        if ! tests/test$i.sh ; 
+        then 
+            ecnt=$(( $ecnt + 1 )) ;
+        fi
+    done
 
-if ! tests/test4.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
+done
 
-if ! tests/test5.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-
-if ! tests/test6.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-
-# This test is worth twice the points of a previous test:
-if ! tests/test7.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-if ! tests/test7.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-
-if ! tests/test8.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-if ! tests/test8.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-
-if ! tests/test9.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-if ! tests/test9.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-if ! tests/test9.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-if ! tests/test9.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-
-if ! tests/test10.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-if ! tests/test10.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-if ! tests/test10.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-if ! tests/test10.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-
-if ! tests/test11.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-if ! tests/test11.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-
-if ! tests/test12.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-if ! tests/test12.sh ; then ecnt=$(( $ecnt + 1 )) ; fi
-
-
-echo "your code passes $(( $total - $ecnt )) of $total tests"
+echo "your code passes $(( $totalCasesRun - $ecnt )) of $totalCasesRun cases runned in $totalTestsRun tests"
 rm -f dlist.o dccthread.o
+rm -f test*.out test*.err
+rm gcc.log
 exit 0
