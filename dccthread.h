@@ -2,8 +2,6 @@
 #define __DCCTHREAD_HEADER__
 
 #include <time.h>
-#include "dccthread.h"
-#include "dlist.h"   
 
 typedef struct dccthread dccthread_t;
 
