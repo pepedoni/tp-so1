@@ -25,6 +25,17 @@ const char * dccthread_name(dccthread_t *tid){
 	return tid->name;
 }
 
+dccthread_t * dccthread_self(void){
+	return threads_prontas->head->data;
+}
+
+void dccthread_yield(void){
+	dccthread_t *current_context = dccthread_self();
+
+	dlist_push_right(threads_prontas, current_context);
+	swapcontext(&current_context->context, &gerente->context);
+}
+
 void set_initial_context(dccthread_t *thread, dccthread_t *link_thread) {
     if (link_thread != NULL) {
         thread->context.uc_link = &link_thread->context;
@@ -76,15 +87,4 @@ void dccthread_init(void (*func)(int), int param) {
     setcontext(&gerente->context);
    
     exit(EXIT_SUCCESS);
-}
-
-dccthread_t * dccthread_self(void){
-	return threads_prontas->head->data;
-}
-
-void dccthread_yield(void){
-	dccthread_t *current_context = dccthread_self();
-
-	dlist_push_right(threads_prontas, current_context);
-	swapcontext(&current_context->context, &gerente->context);
 }
