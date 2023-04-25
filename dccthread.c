@@ -9,6 +9,8 @@
 typedef struct dccthread{
 	ucontext_t context;
 	char name[DCCTHREAD_MAX_NAME_SIZE];
+    
+    dccthread_t *thread_espera;
 
 } dccthread_t;
 
@@ -87,4 +89,11 @@ void dccthread_init(void (*func)(int), int param) {
     setcontext(&gerente->context);
    
     exit(EXIT_SUCCESS);
+}
+
+void dccthread_wait(dccthread_t *tid){
+	dccthread_t *thread_atual = dccthread_self();
+    thread_atual->thread_espera = tid;
+    dlist_push_right(threads_aguardando, thread_atual);
+    swapcontext(&thread_atual->context, &gerente->context);
 }
