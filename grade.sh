@@ -6,12 +6,13 @@ set -eu
 
 total=22
 ecnt=0
-stop=6
+start=7
+stop=8
 totalTestsRun=0
 totalCasesRun=0
 
 #Run script until stop
-for (( i=0; i<=$stop; i++ ))
+for (( i=start; i<=$stop; i++ ))
 do
     
     if [ $i -le 6 ]
