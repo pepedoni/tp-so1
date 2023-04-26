@@ -3,16 +3,14 @@ set -eu
 
 # DCC605: Userspace threading library programming assignment
 # Autograding script
-
-total=22
+testsToRun=(0 1 2 3 4 5 6 7 8 9 10)
+total=23
 ecnt=0
-start=0
-stop=11
 totalTestsRun=0
 totalCasesRun=0
 
 #Run script until stop
-for (( i=start; i<=$stop; i++ ))
+for i in ${testsToRun[*]}
 do
     
     if [ $i -le 6 ]
@@ -34,9 +32,9 @@ do
     do
         totalCasesRun=$(( $totalCasesRun + 1 )) ;
         totalTestsRun=$(( $totalTestsRun + 1 )) ;
-        
+        echo "Executando teste $i pela $j vez"  
         if ! tests/test$i.sh ; 
-        then 
+        then 10
             ecnt=$(( $ecnt + 1 )) ;
         fi
     done

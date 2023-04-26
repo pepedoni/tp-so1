@@ -119,7 +119,6 @@ int dccthread_nexited(){
 }
 
 // Funções principais
-
 void dccthread_exit(void){
     sigprocmask(SIG_BLOCK, &mask, NULL);
 	dccthread_t* thread_em_execucao = dccthread_self();
@@ -160,6 +159,7 @@ dccthread_t * dccthread_create(const char *name, void (*func)(int), int param) {
 
 void cria_timer() {
     sigenv_timer.sigev_notify = SIGEV_THREAD;
+    sigenv_timer.sigev_signo  = SIGRTMIN;
     sigenv_timer.sigev_notify_function = evento_timer;
     sigenv_timer.sigev_value.sival_ptr = &timer_preempcao;
 
@@ -169,12 +169,13 @@ void cria_timer() {
 }
 
 void gerenciador() {
-    sigprocmask(SIG_BLOCK, &mask, NULL);
     while(!dlist_empty(threads_prontas)) {
         timer_settime(timer_preempcao, 0, &its, NULL);
         dccthread_t *thread = (dccthread_t *) malloc (sizeof(dccthread_t));
         thread = threads_prontas->head->data;
+        sigprocmask(SIG_UNBLOCK, &mask, NULL);
         swapcontext(&thread_gerente->context, &thread->context);
+        sigprocmask(SIG_BLOCK, &mask, NULL);
         dlist_pop_left(threads_prontas);
     }
     exit(EXIT_SUCCESS);
@@ -186,14 +187,14 @@ void dccthread_init(void (*func)(int), int param) {
     threads_aguardando = dlist_create();
     threads_finalizadas = dlist_create();
 
-    // Inicializa o timer
-    cria_timer();
-
     // Inicializa a mascara de sinais
  	sigemptyset(&mask);
 	sigaddset(&mask, SIGRTMIN);
-	sigaddset(&mask, SIGRTMAX);
     sigprocmask(SIG_SETMASK, &mask, NULL);	
+    sigprocmask(SIG_BLOCK, &mask, NULL);
+
+    // Inicializa o timer
+    cria_timer();
 
     // Cria a thread gerentes
     thread_gerente = (dccthread_t *) malloc (sizeof(dccthread_t));
@@ -204,6 +205,9 @@ void dccthread_init(void (*func)(int), int param) {
 
     // Cria a thread thread_principal
     thread_principal = dccthread_create("main", func, param);
+ 
+    sigprocmask(SIG_UNBLOCK, &mask, NULL);
+ 
     setcontext(&thread_gerente->context);
    
     exit(EXIT_SUCCESS);
