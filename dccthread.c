@@ -122,14 +122,19 @@ int dccthread_nexited(){
 
 void dccthread_exit(void){
     sigprocmask(SIG_BLOCK, &mask, NULL);
-
 	dccthread_t* thread_em_execucao = dccthread_self();
+    thread_em_execucao->finalizada = 1;
+    dlist_push_right(threads_finalizadas, thread_em_execucao);
+
+    if (thread_em_execucao->aguardada == 0) {
+        sigprocmask(SIG_UNBLOCK, &mask, NULL);
+        return;
+    }
 	dccthread_t* thread_aguardando = (dccthread_t*) dlist_find_remove(threads_aguardando, thread_em_execucao, verifica_thread_aguardada, NULL);
 	if(thread_aguardando != NULL){
 		dlist_push_right(threads_prontas, thread_aguardando);
 	}
-    thread_em_execucao->finalizada = 1;
-    dlist_push_right(threads_finalizadas, thread_em_execucao);
+   
 	setcontext(&thread_gerente->context);
 
     sigprocmask(SIG_UNBLOCK, &mask, NULL);
