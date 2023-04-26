@@ -6,7 +6,7 @@ set -eu
 
 total=22
 ecnt=0
-start=7
+start=0
 stop=8
 totalTestsRun=0
 totalCasesRun=0
