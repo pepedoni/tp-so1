@@ -4,6 +4,8 @@
         "cstdlib": "c",
         "string.h": "c",
         "time.h": "c",
-        "dlist.h": "c"
-    }
+        "dlist.h": "c",
+        "dccthread.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }
