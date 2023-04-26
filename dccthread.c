@@ -35,6 +35,7 @@ timer_t timer_preempcao;
 struct itimerspec its;
 struct sigevent sigenv_timer;
 int tempo_preempcao = 10000000;
+sigset_t mask;
 
 
 // Funções Auxiliares
@@ -57,13 +58,19 @@ void set_initial_context(dccthread_t *thread, dccthread_t *link_thread) {
 }
 
 void dccthread_yield(){
+    sigprocmask(SIG_BLOCK, &mask, NULL);
+
 	dccthread_t *thread_atual = dccthread_self();
 
 	dlist_push_right(threads_prontas, thread_atual);
 	swapcontext(&thread_atual->context, &thread_gerente->context);
+
+    sigprocmask(SIG_UNBLOCK, &mask, NULL);
 }
 
 void dccthread_wait(dccthread_t *tid){
+    sigprocmask(SIG_BLOCK, &mask, NULL);
+
     tid->aguardada = 1;
     if (tid->finalizada == 1) {
         return;
@@ -72,6 +79,8 @@ void dccthread_wait(dccthread_t *tid){
     thread_em_execucao->thread_aguardada = tid;
     dlist_push_right(threads_aguardando, thread_em_execucao);
     swapcontext(&thread_em_execucao->context, &thread_gerente->context);
+
+    sigprocmask(SIG_UNBLOCK, &mask, NULL);
 }
 
 int verifica_thread_aguardada(const void *t1, const void *t2, void *userdata){
@@ -112,6 +121,8 @@ int dccthread_nexited(){
 // Funções principais
 
 void dccthread_exit(void){
+    sigprocmask(SIG_BLOCK, &mask, NULL);
+
 	dccthread_t* thread_em_execucao = dccthread_self();
 	dccthread_t* thread_aguardando = (dccthread_t*) dlist_find_remove(threads_aguardando, thread_em_execucao, verifica_thread_aguardada, NULL);
 	if(thread_aguardando != NULL){
@@ -120,9 +131,13 @@ void dccthread_exit(void){
     thread_em_execucao->finalizada = 1;
     dlist_push_right(threads_finalizadas, thread_em_execucao);
 	setcontext(&thread_gerente->context);
+
+    sigprocmask(SIG_UNBLOCK, &mask, NULL);
 }
 
 dccthread_t * dccthread_create(const char *name, void (*func)(int), int param) {
+    sigprocmask(SIG_BLOCK, &mask, NULL);
+
     dccthread_t *nova_thread;
 	nova_thread = (dccthread_t*) malloc (sizeof(dccthread_t));
     getcontext(&nova_thread->context);
@@ -133,6 +148,8 @@ dccthread_t * dccthread_create(const char *name, void (*func)(int), int param) {
     // Adiciona a thread a lista de threads prontas
     dlist_push_right(threads_prontas, nova_thread);
     makecontext(&nova_thread->context, (void *) func, 1, param);
+
+    sigprocmask(SIG_UNBLOCK, &mask, NULL);
     return nova_thread;
 }
 
@@ -147,6 +164,7 @@ void cria_timer() {
 }
 
 void gerenciador() {
+    sigprocmask(SIG_BLOCK, &mask, NULL);
     while(!dlist_empty(threads_prontas)) {
         timer_settime(timer_preempcao, 0, &its, NULL);
         dccthread_t *thread = (dccthread_t *) malloc (sizeof(dccthread_t));
@@ -165,6 +183,12 @@ void dccthread_init(void (*func)(int), int param) {
 
     // Inicializa o timer
     cria_timer();
+
+    // Inicializa a mascara de sinais
+ 	sigemptyset(&mask);
+	sigaddset(&mask, SIGRTMIN);
+	sigaddset(&mask, SIGRTMAX);
+    sigprocmask(SIG_SETMASK, &mask, NULL);	
 
     // Cria a thread gerentes
     thread_gerente = (dccthread_t *) malloc (sizeof(dccthread_t));
