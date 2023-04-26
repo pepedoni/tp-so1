@@ -14,8 +14,12 @@ typedef struct dccthread{
 	ucontext_t context;
 	char name[DCCTHREAD_MAX_NAME_SIZE];
     
+    // Thread a qual essa thread precisa aguardar para finalizar
     dccthread_t *thread_aguardada;
+    // Thread já foi finalizada ( 0 - Não, 1 - Sim )
     int finalizada;
+    // Thread é aguardada por outra thread ( 0 - Não, 1 - Sim )
+    int aguardada;
 
 } dccthread_t;
 
@@ -23,6 +27,7 @@ dccthread_t *thread_gerente;
 dccthread_t *thread_principal;
 dccthread_t *thread_atual;
 
+struct dlist *threads_finalizadas;
 struct dlist *threads_prontas;
 struct dlist *threads_aguardando;
 
@@ -59,6 +64,7 @@ void dccthread_yield(){
 }
 
 void dccthread_wait(dccthread_t *tid){
+    tid->aguardada = 1;
     if (tid->finalizada == 1) {
         return;
     }
@@ -82,16 +88,37 @@ static void evento_timer(union sigval sigev_value){
     dccthread_yield();
 }
 
+int dccthread_nwaiting(){
+    return threads_aguardando->count;
+}
+
+int dccthread_nexited(){
+    // Percorre a lista de threads finalizadas e conta quantas o campo aguardada é igual a 0
+    int count = 0;
+    if (threads_finalizadas->count == 0) {
+        return count;
+    } 
+    struct dnode *node = threads_finalizadas->head;
+    while (node != NULL) {
+        dccthread_t *thread = (dccthread_t *) node->data;
+        if (thread->aguardada == 0) {
+            count++;
+        }
+        node = node->next;
+    }
+    return count;
+}
+
 // Funções principais
 
 void dccthread_exit(void){
 	dccthread_t* thread_em_execucao = dccthread_self();
 	dccthread_t* thread_aguardando = (dccthread_t*) dlist_find_remove(threads_aguardando, thread_em_execucao, verifica_thread_aguardada, NULL);
 	if(thread_aguardando != NULL){
-       // printf("%s Thread Aguardando\n", dccthread_name(thread_aguardando));
 		dlist_push_right(threads_prontas, thread_aguardando);
 	}
     thread_em_execucao->finalizada = 1;
+    dlist_push_right(threads_finalizadas, thread_em_execucao);
 	setcontext(&thread_gerente->context);
 }
 
@@ -134,6 +161,7 @@ void dccthread_init(void (*func)(int), int param) {
     // Inicializa as listas de threads prontas e threads aguardando
     threads_prontas = dlist_create();
     threads_aguardando = dlist_create();
+    threads_finalizadas = dlist_create();
 
     // Inicializa o timer
     cria_timer();

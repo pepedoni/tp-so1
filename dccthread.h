@@ -44,4 +44,12 @@ dccthread_t * dccthread_self(void);
  * by the library. */
 const char * dccthread_name(dccthread_t *tid);
 
+/* `dccthread_nwaiting` returns the number of threads waiting for 
+ * other threads to terminate. */
+int dccthread_nwaiting(void);
+
+/*`dccthread_nexited`returns the number of threads that have finished 
+ * but have not yet targeted by dccthread_wait. */
+int dccthread_nexited(void);
+
 #endif
