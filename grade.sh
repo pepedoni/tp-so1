@@ -34,7 +34,7 @@ do
         totalTestsRun=$(( $totalTestsRun + 1 )) ;
         echo "Executando teste $i pela $j vez"  
         if ! tests/test$i.sh ; 
-        then 10
+        then
             ecnt=$(( $ecnt + 1 )) ;
         fi
     done
