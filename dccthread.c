@@ -20,6 +20,7 @@ typedef struct dccthread{
     int finalizada;
     // Thread é aguardada por outra thread ( 0 - Não, 1 - Sim )
     int aguardada;
+    int dormindo;
 
 } dccthread_t;
 
@@ -173,10 +174,15 @@ void gerenciador() {
         timer_settime(timer_preempcao, 0, &its, NULL);
         dccthread_t *thread = (dccthread_t *) malloc (sizeof(dccthread_t));
         thread = threads_prontas->head->data;
-        sigprocmask(SIG_UNBLOCK, &mask, NULL);
-        swapcontext(&thread_gerente->context, &thread->context);
-        sigprocmask(SIG_BLOCK, &mask, NULL);
-        dlist_pop_left(threads_prontas);
+        if(thread->dormindo == 1){
+            dlist_pop_left(threads_prontas);
+            dlist_push_right(threads_prontas, thread);
+        } else {
+            sigprocmask(SIG_UNBLOCK, &mask, NULL);
+            swapcontext(&thread_gerente->context, &thread->context);
+            sigprocmask(SIG_BLOCK, &mask, NULL);
+            dlist_pop_left(threads_prontas);
+        }
     }
     exit(EXIT_SUCCESS);
 }
