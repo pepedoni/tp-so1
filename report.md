@@ -70,7 +70,14 @@ do grupo no desenvolvimento do trabalho (os valores devem somar
   auxiliar nesse processo. Caso encontre alguma thread aguardando
   ele adiciona essa thread novamente a lista de threads prontas. 
 
-  * Parte 5:
+  * Parte 5: Semelhante ao que foi feito anteriormente foi criada
+  uma lista `threads_dormindo`. Dessa forma, ao chamar o `dccthread_wait`
+  a thread atual é adicionada a essa lista e um timer é configurado 
+  com o tempo recebido como parametro. Apos o tempo configurado, a função
+  `evento_fim_sleep` é disparada. Essa função recebe qual thread referente
+  aquele evento e a remove da lista de `threads_dormindo`e a coloca na 
+  lista de `threads_prontas`
+  
 
   2. Descreva o mecanismo utilizado para sincronizar chamadas de
      dccthread_yield e disparos do temporizador (parte 4).
