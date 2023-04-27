@@ -79,8 +79,6 @@ do grupo no desenvolvimento do trabalho (os valores devem somar
   Esse bloqueio também foi adicionado a demais pontos onde a condição
   de corrida poderia existir. 
 
-
-
 Outros pontos implementados: 
 Realizamos a implementação de dois métodos sugeridos no TP
 `dccthread_nwaiting`: Que retorna a quantidade de threads na lista
