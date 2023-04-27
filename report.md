@@ -21,6 +21,7 @@ do grupo no desenvolvimento do trabalho (os valores devem somar
   * https://pubs.opengroup.org/onlinepubs/7908799/xsh/ucontext.h.html
   * https://pubs.opengroup.org/onlinepubs/7908799/xsh/sigprocmask.html
   * https://linuxhint.com/c-sigprocmask-function-usage/
+  * https://pubs.opengroup.org/onlinepubs/7908799/xsh/ucontext.h.html
   
 
 4. Estruturas de dados
