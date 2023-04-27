@@ -43,7 +43,8 @@ do grupo no desenvolvimento do trabalho (os valores devem somar
   de adicionar a thread atual para o final da lista de prontos e
   repassar o controle ao gerenciador.
 
-  * Parte 2: Adicionamos ao struct `dccthread` duas propriedades
+  * Parte 2: 
+  - Adicionamos ao struct `dccthread` duas propriedades
   novas para controlar threads que estão *aguardando* e threads que
   são *aguardadas* por outras threads. Além disso, criamos uma 
   lista `threads_aguardando` que contem as threads que não estão
@@ -53,7 +54,7 @@ do grupo no desenvolvimento do trabalho (os valores devem somar
   `dccthread_wait` é chamada não ocorra problemas como esperar uma 
   thread que já foi finalizada.  
 
-  Dessa forma, quando `dccthread_wait` é chamado, caso a thread 
+  - Dessa forma, quando `dccthread_wait` é chamado, caso a thread 
   a ser aguardada não tenha sido finalizada a thread atual é 
   adicionada a lista de `threads_aguardando` e removida da lista
   `threads_prontas`. Além disso, é preenchida a propriedade
@@ -61,7 +62,7 @@ do grupo no desenvolvimento do trabalho (os valores devem somar
   espera está aguardando. Caso a thread a ser aguardada já tenha
   sido finalizada a execução da thread atual segue normalmente.
 
-  Por fim, para concluir o que foi solicitado na parte 2
+  - Por fim, para concluir o que foi solicitado na parte 2
   implementamos a função `dccthread_exit`. Essa função busca na 
   lista de `threads_agurdadando` se ela é esperada por alguma
   thread. A função `verifica_thread_aguardada` foi criada para 
