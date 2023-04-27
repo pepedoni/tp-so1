@@ -29,7 +29,8 @@ do grupo no desenvolvimento do trabalho (os valores devem somar
   1. Descreva e justifique as estruturas de dados utilizadas para
      gerência das threads de espaço do usuário (partes 1, 2 e 5).
 
-  * Parte 1: Foi criada a lista `threads_prontas` do tipo `dlist`
+  * Parte 1: 
+  - Foi criada a lista `threads_prontas` do tipo `dlist`
   para armazenar as `dccthreads` que estão prontas para execução.
   Desse modo, ao executar o `dccthread_init` primeiro iniciamos as
   variaveis necessarioas e em seguida criamos a thread gerente e a
@@ -39,7 +40,7 @@ do grupo no desenvolvimento do trabalho (os valores devem somar
   ele remove a thread atual da lista de prontos e busca a próxima 
   thread.  
 
-  Nesse sentido, a função `dccthread_yield` teve somente a função
+  - Nesse sentido, a função `dccthread_yield` teve somente a função
   de adicionar a thread atual para o final da lista de prontos e
   repassar o controle ao gerenciador.
 
