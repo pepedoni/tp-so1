@@ -101,6 +101,24 @@ void *dlist_find_remove(struct dlist *dl, void *data, /* {{{ */
 	return NULL;
 } /* }}} */
 
+void *dlist_find(struct dlist *dl, void *data, /* {{{ */
+		dlist_cmp_func cmp, void *user_data)
+{
+	struct dnode *curr;
+	for(curr = dl->head; curr; curr = curr->next) {
+		if(!curr->data) continue;
+		if(cmp(curr->data, data, user_data)) continue;
+		void *ptr = curr->data;
+		if(dl->head == curr) dl->head = curr->next;
+		if(dl->tail == curr) dl->tail = curr->prev;
+		if(curr->prev) curr->prev->next = curr->next;
+		if(curr->next) curr->next->prev = curr->prev;
+		dl->count--;
+		return ptr;
+	}
+	return NULL;
+}
+
 int dlist_empty(struct dlist *dl) /* {{{ */
 {
 	if(dl->head == NULL) {

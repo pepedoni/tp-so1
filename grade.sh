@@ -3,7 +3,7 @@ set -eu
 
 # DCC605: Userspace threading library programming assignment
 # Autograding script
-testsToRun=(0 1 2 3 4 5 6 7 8 9 10)
+testsToRun=(0 1 2 3 4 5 6 7 8 9 10 11 12)
 total=23
 ecnt=0
 totalTestsRun=0
